@@ -14,6 +14,7 @@ class App extends React.Component {
     let labels = ['basketball', 'cricket', 'laptop', 'phone', 'pubg', 'tiger']
     return (
     <>
+
       <center>
       <div>
       {

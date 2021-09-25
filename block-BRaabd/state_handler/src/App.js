@@ -27,6 +27,7 @@ class App extends React.Component {
         <button>Laptop</button>
         <button>Cricket</button>
         <img src={} />
+        
       </center>
     )
   }

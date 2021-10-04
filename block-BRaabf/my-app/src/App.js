@@ -5,16 +5,16 @@ class App extends React.Component{
     super(props);
     this.state = {
       counter : 0,
-      stepsFive : 5,
-      stepsTen : 10,
-      stepsFifteen : 15
+      step : 5,
+      maxValue : 5
     }
   }
 
   handleIncrement = () => {
+    let {counter, step, maxValue} = this.state;
+
     this.setState({
-      counter : this.state.counter + 1,
-      counter : this.state.counter + this.state.stepsFive
+      counter : counter + step > maxValue ? counter : counter + step
     })
 
 
@@ -22,7 +22,7 @@ class App extends React.Component{
 
   handleDecrement = () => {
     this.setState({
-      counter : this.state.counter - 1
+      counter : this.state.counter - this.state.step
     })
   }
 
@@ -32,21 +32,23 @@ class App extends React.Component{
     })
   }
 
-  // handleStepFive = () => {
-  //   this.setState({
-  //     counter : this.state.counter + this.state.stepsFive
-  //   })
-  // }
-
   render() {
     return (
       <center>
         <h1>{this.state.counter }</h1>
         <h2>Steps</h2>
         <div>
-          <button onClick={this.handleStepFive}>{this.state.stepsFive}</button>
-          <button>{this.state.stepsTen}</button>
-          <button>{this.state.stepsFifteen}</button>
+          {
+            [5, 10, 15].map(step => <button onClick={() => {this.setState({
+              step : step
+            })}} className={this.state.step === step ? "active" : ""}>{step}</button>)
+          }
+          <h2>Max value</h2>
+          {
+            [15, 100, 200].map(maxValue => <button onClick={() => {this.setState({
+              maxValue : maxValue
+            })}} className={this.state.maxValue === maxValue ? "active" : ""}>{maxValue}</button>)
+          }
         </div>
         <div>
             <button onClick={this.handleIncrement}>Increment</button>
@@ -57,5 +59,7 @@ class App extends React.Component{
     )
   }
 }
+
+
 
 export default App;

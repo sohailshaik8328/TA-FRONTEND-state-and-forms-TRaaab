@@ -3,6 +3,21 @@ import data from "./data.json"
 import Card from "./Cards";
 
 class Tags extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            menu : null
+        }
+    }
+
+    handleButtons = (category) => {
+        this.setState(() => {
+            return {
+                category
+            }
+        })
+    }
+
     render() {
         return (
         <>
@@ -11,7 +26,7 @@ class Tags extends React.Component {
                   <center>
 
                       {
-                          data.map(menu => <button>{menu.category}</button>)
+                          data.map(menu => <button  >{menu.category}</button>)
                       }
                   </center>
               </div>

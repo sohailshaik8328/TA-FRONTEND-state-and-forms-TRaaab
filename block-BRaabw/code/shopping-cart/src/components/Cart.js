@@ -1,40 +1,91 @@
 import React from 'react';
-import data from "../data.json";
-import CartProducts from './CartProducts';
+import '../stylesheets/index.css';
+import CartItem from './CartItem';
+
 
 class Cart extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            toggle : false,
-            cartProductsList : this.props.product 
+            isOpen : false,
         }
     }
 
-    handleClickCart = () => {
+    close = () => {
         this.setState({
-            toggle : !this.state.toggle,
+            isOpen : false,
+        })
+    }
+
+    open = () => {
+        this.setState({
+            isOpen : true,
         })
     }
 
     render() {
-        var product = this.props.product
-        console.log(product, "asdfasdfads")
-        return (
-           <>
-             <div className=" w-4/12 fixed top-0 right-0 bg-black">
-                <div>
-                    {this.state.toggle ? <i className="fas fa-times text-white bg-black p-2 px-4 text-xl absolute -left-8 top-0" onClick={this.handleClickCart}></i> : <img className="bag_icon" src="/images/bag-icon.png" alt="bag-icon" onClick={this.handleClickCart} />}
-                </div>
-                <div>
-                    {this.state.toggle ? <CartProducts  className="fixed top-2 right-4 " cartProducts={product} /> : ""}
-                </div>
-             </div>
-            
-           </>
+        let { isOpen } = this.state;
+        let totalQuantity = this.props.cartItems.reduce((acc, cv) => {
+            acc = acc + cv.quantity
+            return acc;
+        }, 0)
 
-        )
+        let totalAmount = this.props.cartItems.reduce((acc, cv) => {
+            acc = cv.price * cv.quantity
+            return acc;
+        }, 0)
+        if(!isOpen) {
+            return <ClosedCart open={this.open} totalQuantity={totalQuantity} />
+        }
+
+        return (
+            <div>
+                <aside className="cart" >
+                    <div onClick={this.close} className="close-btn">X</div>
+                    <div className="cart-body">
+                        <div className="cart-heading">
+                            <div className="cart-icon">
+                                <img src="/images/bag-icon.png" className="icon" />
+                                <span className="item-count">
+                                    {
+                                        totalQuantity
+                                    }
+                                </span>
+                            </div>
+                            <h2>Cart</h2>
+                        </div>
+          
+                        {
+                            this.props.cartItems.map((item) => (
+                                <CartItem key={item} {...item} incrementQuantity={this.props.incrementQuantity} decrementQuantity={this.props.decrementQuantity} deleteItem={this.props.deleteItem} />
+                            ))
+                        }
+
+                        <div className="cart-checkout">
+                            <div>
+                                <p>Total</p>
+                                <p>$ {totalAmount}</p>
+                            </div>
+                            <button onClick={() => alert(`You have to pay ${totalAmount}`)}>CHECKOUT</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        );
     }
+}
+
+function ClosedCart(props) {
+    return (
+        <div className="close-cart">
+            <span onClick={props.open} className="open-btn">
+                <div className="cart-icon">
+                    <img src="/images/bag-icon.png" className="icon" />
+                    <span className="item-count">{props.totalQuantity}</span>
+                </div>
+            </span>
+        </div>
+    )
 }
 
 export default Cart;

@@ -1,111 +1,86 @@
 import React from 'react';
-import '../stylesheets/App.css';
-import data from "../data.json"
-import EachProduct from './EachProduct';
+import OrderBy from './OrderBy';
+
+
 
 class Products extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            sizes : "",
-            highToLowSortedPrice : "",
-            LowToHighSortedPrice : "",
+            selectedOrder : "",
         }
     }
 
-    handleSizes = (eachSize) => {
+    handleOrderBy = (event) => {
         this.setState({
-            sizes : eachSize,
+            selectedOrder : event.target.value,
         })
     }
 
-    handleHighToLow = (event) => {
-            let allPrices = data.products;
-            let sortedHighToLow = allPrices.sort((a, b) => b.price - a.price)
-        this.setState({
-            highToLowSortedPrice : sortedHighToLow,
-        })
-    }
+    handleOrderProducts = (order, sizes, products) => {
+        let sortedProducts = [...products]
 
-    handleLowToHigh = () => {
-        let allPrices = data.products;
-        let sortedLowToHigh = allPrices.sort((a, b) => a.price - b.price);
-        this.setState({
-            LowToHighSortedPrice : sortedLowToHigh,
+       if(sizes.length > 0) {
+        sortedProducts = sortedProducts.filter((p) => {
+            for (const size of sizes) {
+                if(p.availableSizes.includes(size)) {
+                    return true;
+                }
+            }
         })
+       }
+
+        if(order === "highest") {
+            sortedProducts =sortedProducts.sort((a, b) => b.price - a.price);
+        }
+
+        if(order === "lowest") {
+            sortedProducts = sortedProducts.sort((a, b) => a.price - b.price);
+        }
+        
+        return sortedProducts;
+        
     }
 
     render() {
-
-        // filtering sizes
-        let allSizes = [];
-        data.products.map((product) => {
-            product.availableSizes.map((eachSize) => {
-                return allSizes.push(eachSize);
-            })
-        })
-
-        let filteredSizes = Array.from(new Set(allSizes));
-        // console.log(filteredSizes);
-
-        //Rendering all data of products
-        let allProducts = [];
-        if(!this.state.sizes) {
-            data.products.map((product) => {
-                return allProducts.push(product);
-            })    
-        } else if (this.state.highToLowSortedPrice) {
-            data.products.map((product) => {
-                return allProducts.push(product)
-            })
-        } else {
-            data.products.map((product) => {
-                product.availableSizes.map((eachsize) => {
-                   if(eachsize === this.state.sizes) {
-                       return allProducts.push(product);
-                   }
-                })
-            })
-        }
-
- 
-        // console.log(allProducts);
+        let {selectedOrder} = this.state;
+        let products = this.handleOrderProducts(selectedOrder, this.props.selectedSize ,this.props.data)
         return (
-            <>
-             <section>
-                 <div className="container">
-                        <p className="sort_heading_size">Sort By Sizes</p>
-                    <div className="total_section flex">
-                        <div className="aside flex flex-30">
+            <div>
+                <div className="products-filter">
+                    <p>
+                        {
+                            `${this.props.data.length} Product${this.props.data.length > 1 ? 's' : ""} found.`
+                        } {` `}
+                    </p>
+                    <OrderBy selectedOrder={selectedOrder} handleOrderBy={this.handleOrderBy} />
+                </div>
 
-                            {
-                              filteredSizes.map((eachSize) => {
-                                  return (
-                                      <div>
-                                            <button  key={eachSize} className="size_buttons center" onClick={() => this.handleSizes(eachSize)}>{eachSize}</button>
-                                      </div>
-                                  )
-                              })  
-                            }
-
-                           
-                        </div>
-
-                        <div className="flex-30 prices_sort">
-                        <p className="sort_heading_price">Sort By Price</p>
-
-                            <button className="sort_btn" onClick={this.handleHighToLow}>High To Low</button>
-                            <button className="sort_btn" onClick={this.handleLowToHigh}>Low To High</button>
-                        </div>
-                    </div>
-                        <section className="all_products_section">
-                            <EachProduct  allProducts={allProducts} allSizes={this.state.sizes} />
-                        </section>
-                 </div>
-             </section>
-            </>
+                <div className="flex wrap">
+                    {
+                        products.map((product) => (
+                            <Product key={product.id} {...product} handleAddToCart={this.props.handleAddToCart} />
+                        ))
+                    }
+                </div>
+            </div>
         );
     }
+}
+
+function Product(props) {
+    return (
+        <div className="product-item">
+            <div className="product-label">Free Shipping</div>
+            <img className="product-item-img" src={`/images/products/${props.sku}_1.jpg`} alt={props.title} />
+            <div className="product-item-details">
+                <p className="product-item-title">{props.title}</p>
+                <div className="line"></div>
+                <h3 className="product-item-price">{props.currencyFormat + props.price}</h3>
+                <button onClick={() => props.handleAddToCart(props)}>Add To Cart</button>
+            </div>
+        </div>
+    )
 }
 
 export default Products;

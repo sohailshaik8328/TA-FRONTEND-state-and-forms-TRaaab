@@ -6,7 +6,7 @@ class Header extends React.Component {
         return (
             <header className="header_section">
                 <div className="container">
-                    <div className="header flex">
+                    <div className="header flex space_between">
                         <section className="header_left">
                             <a className="brand" href="#">Shopping-Cart</a>
                         </section>
@@ -14,7 +14,6 @@ class Header extends React.Component {
                             <nav>
                                 <ul className="flex">
                                     <li><a href="#">Home</a></li>
-                                    <li><a href="#">Cart</a></li>
                                 </ul>
                             </nav>
                         </section>
